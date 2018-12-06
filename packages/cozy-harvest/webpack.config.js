@@ -1,23 +1,24 @@
-var path = require('path');
-var webpack = require('webpack');
+var path = require('path')
 
 module.exports = {
-  entry: './src/index.js',
+  resolve: {
+    extensions: ['.jsx', '.js', '.json', '.css'],
+    // linked package will still be see as a node_modules package
+    symlinks: false
+  },
+  entry: path.resolve(__dirname, './src/index.jsx'),
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, './dist'),
     filename: 'app.bundle.js'
   },
   module: {
     rules: [
       {
-        test: /\.jsx$/,
+        test: /\.jsx?$/,
         loader: 'babel-loader',
         query: {
-          presets: ['es2015']
+          presets: ['cozy-app']
         }
-      },            {
-        test: /\.jsx$/,
-        loader: 'jsx-loader?insertPragma=React.DOM&harmony'
       }
     ]
   },
@@ -25,5 +26,4 @@ module.exports = {
     colors: true
   },
   devtool: 'source-map'
-};
-
+}
