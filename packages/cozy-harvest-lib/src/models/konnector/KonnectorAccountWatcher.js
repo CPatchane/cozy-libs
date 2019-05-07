@@ -11,7 +11,11 @@ export class KonnectorAccountWatcher {
   }
 
   async watch() {
-    const { onTwoFACodeAsked, onLoginSuccessHandled } = this.options
+    const {
+      onTwoFACodeAsked,
+      onLoginSuccessHandled,
+      onLoginSuccess
+    } = this.options
     const accountSubscription = await subscribe(
       {
         // Token structure differs between web and mobile
@@ -29,9 +33,10 @@ export class KonnectorAccountWatcher {
       const { state } = this.account
       if (accounts.isTwoFANeeded(state) || accounts.isTwoFARetry(state)) {
         onTwoFACodeAsked(state)
-      }
-      if (accounts.isLoginSuccessHandled(state)) {
+      } else if (accounts.isLoginSuccessHandled(state)) {
         onLoginSuccessHandled(state)
+      } else if (accounts.isLoginSuccess(state)) {
+        onLoginSuccess(state)
       }
     })
   }
