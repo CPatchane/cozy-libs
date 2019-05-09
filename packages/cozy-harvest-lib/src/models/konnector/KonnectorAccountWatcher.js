@@ -1,16 +1,27 @@
-import { subscribe } from 'cozy-realtime'
+import CozyRealtime from 'cozy-realtime'
 import accounts from '../../helpers/accounts'
 
 const ACCOUNT_DOCTYPE = 'io.cozy.accounts'
 
 export class KonnectorAccountWatcher {
   constructor(client, account, options) {
-    this.client = client
+    this.realtime = new CozyRealtime({ cozyClient: client })
     this.account = account
     this.options = options
+    this.handleAccountUpdated = this.handleAccountUpdated.bind(this)
+  }
+
+  handleAccountUpdated(account) {
+    this.account = account
+    const { state } = this.account
+    if (accounts.isTwoFANeeded(state) || accounts.isTwoFARetry(state)) {
+      const { onTwoFACodeAsked } = this.options
+      onTwoFACodeAsked(state)
+    }
   }
 
   async watch() {
+<<<<<<< HEAD
     const {
       onTwoFACodeAsked,
       onLoginSuccessHandled,
@@ -24,9 +35,15 @@ export class KonnectorAccountWatcher {
           this.client.stackClient.token.accessToken,
         url: this.client.options.uri
       },
+=======
+    this.realtime.subscribe(
+      'updated',
+>>>>>>> 80a3f8d... feat(Harvest): Upgrade cozy-realtime
       ACCOUNT_DOCTYPE,
-      { docId: this.account._id }
+      this.account._id,
+      this.handleAccountUpdated
     )
+<<<<<<< HEAD
 
     accountSubscription.onUpdate(updatedAccount => {
       this.account = updatedAccount
@@ -39,6 +56,8 @@ export class KonnectorAccountWatcher {
         onLoginSuccess(state)
       }
     })
+=======
+>>>>>>> 80a3f8d... feat(Harvest): Upgrade cozy-realtime
   }
 }
 
