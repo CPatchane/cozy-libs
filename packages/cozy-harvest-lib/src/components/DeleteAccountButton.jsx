@@ -22,16 +22,18 @@ export class DeleteAccountButton extends Component {
     const { account, deleteAccount, onError, onSuccess } = this.props
     try {
       await deleteAccount(account)
-      if (typeof onSuccess === 'function') onSuccess(account)
+      this.setState({ deleting: false }, () => {
+        if (typeof onSuccess === 'function') onSuccess(account)
+      })
     } catch (e) {
-      if (typeof onError === 'function') {
-        onError(e)
-      } else {
-        // eslint-disable-next-line no-console
-        console.error(e)
-      }
-    } finally {
-      this.setState({ deleting: false })
+      this.setState({ deleting: false }, () => {
+        if (typeof onError === 'function') {
+          onError(e)
+        } else {
+          // eslint-disable-next-line no-console
+          console.error(e)
+        }
+      })
     }
   }
 
